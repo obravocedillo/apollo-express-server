@@ -3,12 +3,20 @@ const { ApolloServer, gql } = require('apollo-server-express');
 
 const typeDefs = gql`
     type Query {
-        hello:String
+        getAllBooks:[Book]
+    }
+    type Book {
+        name: String,
+        author: String,
+        year: Int
     }
 `
 const resolvers = {
     Query: {
-        hello: () => { return  'Hello from apolo' },
+        getAllBooks: () => { return  ([
+            {name:'Book1', author:'Author1', year: 2002},
+            {name:'Book2', author:'Author2', year: 2003},
+        ]) },
     }
 }
 
