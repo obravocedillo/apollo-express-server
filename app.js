@@ -7,6 +7,9 @@ const typeDefs = gql`
         getAllBooks:[Book]
         getAllUsers: [User]
     }
+    type Mutation {
+        saveUser(email: String!, first_name: String!, last_name: String!): String!
+    }
     type Book {
         name: String
         author: String
@@ -41,7 +44,22 @@ const resolvers = {
                 })
             })
         }
+    },
+
+    Mutation:{
+        saveUser: (parent, args) => {
+            return new Promise((resolve)=>{
+                connection.query("INSERT INTO USER (email, first_name, last_name) VALUES (?, ?, ?)",[args.email, args.first_name, args.last_name],(error, results, fields) => {
+                    if(error){
+                        console.log(error);
+                        resolve ('null');
+                    }
+                    resolve (args.email);
+                })
+            })
+        }
     }
+
 }
 
 const server = new ApolloServer({typeDefs, resolvers})
