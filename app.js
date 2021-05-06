@@ -1,6 +1,12 @@
 const express = require('express');
 const connection = require('./db');
 const { ApolloServer, gql } = require('apollo-server-express');
+const { assertSchema } = require('graphql');
+
+let books = [
+    {name:'Book1', author:'Author1', year: 2002},
+    {name:'Book2', author:'Author2', year: 2003},
+];
 
 const typeDefs = gql`
     type Query {
@@ -9,6 +15,7 @@ const typeDefs = gql`
     }
     type Mutation {
         saveUser(email: String!, first_name: String!, last_name: String!): String!
+        saveBook(name: String!, author: String!, year: Int!): Book!
     }
     type Book {
         name: String
@@ -25,10 +32,7 @@ const typeDefs = gql`
 
 const resolvers = {
     Query: {
-        getAllBooks: () => { return  ([
-            {name:'Book1', author:'Author1', year: 2002},
-            {name:'Book2', author:'Author2', year: 2003},
-        ]) },
+        getAllBooks: () => { return (books) },
         getAllUsers: () => {
             return new Promise((resolve)=>{
                 connection.query("SELECT * FROM USER",(error, results, fields) => {
@@ -57,6 +61,15 @@ const resolvers = {
                     resolve (args.email);
                 })
             })
+        },
+        saveBook: (parent, args) => {
+            let newBook = {
+                name: args.name,
+                author: args.author,
+                year: args.year
+            }
+            books.push(newBook);
+            return newBook;
         }
     }
 
